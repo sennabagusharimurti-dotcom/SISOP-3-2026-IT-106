@@ -160,3 +160,6 @@ gcc -Wall -pthread -o navi navi.c
 [Client] Keluar dari chat.
 [Client] Koneksi ditutup.
 ```
+
+## NOTE :
+Saya melakukan commit terbaru dengan menambahkan wired karena kesalahan saya, saya menggabung sistem wired menjadi satu di dalam protocol, dan melakukan commit terbaru untuk memisahkan 2 program tersebut
