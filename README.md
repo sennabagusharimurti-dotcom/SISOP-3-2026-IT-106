@@ -5,13 +5,34 @@
 
 ### Penjelasan
 
-Proyek ini mengimplementasikan sistem chat jaringan bernama **The Wired** yang terdiri dari dua komponen utama: `server.c` sebagai server pusat dan `navi.c` sebagai unit klien (NAVI). Sistem ini menggunakan konsep **Thread**, **Socket (IPC)**, **select()**, dan **Mutex** dari Modul 3 Sistem Operasi.
+Proyek ini mengimplementasikan sistem chat jaringan bernama **The Wired** yang terdiri dari tiga file utama: `wired.c` sebagai server pusat, `navi.c` sebagai unit klien, dan `protocol.h` sebagai header bersama yang menyimpan konstanta konfigurasi. Sistem ini menggunakan konsep **Thread**, **Socket (IPC)**, dan **select()** dari Modul 3 Sistem Operasi.
 
 ---
 
-### server.c
+### protocol.h
 
-File server yang menangani banyak klien secara konkuren menggunakan `select()` untuk memantau semua socket sekaligus dalam satu thread. Server mendukung fitur broadcast, username unik, perintah admin `/kick`, dan logging ke `history.log`.
+Header bersama yang digunakan oleh `wired.c` dan `navi.c`. Berisi konstanta konfigurasi agar tidak hardcode di masing-masing file.
+
+#### Kode
+
+```c
+#ifndef PROTOCOL_H
+#define PROTOCOL_H
+
+#define PORT          12345
+#define MAX_CLIENTS   10
+#define BUFFER_SIZE   1024
+#define ADMIN_PASS    "protocol7"
+#define ALAMAT_SERVER "127.0.0.1"
+
+#endif
+```
+
+---
+
+### wired.c
+
+File server yang menangani banyak klien secara konkuren menggunakan `select()` untuk memantau semua socket sekaligus dalam satu thread. Mendukung broadcast, username unik, dan perintah `/kick`.
 
 #### Kode
 
@@ -40,6 +61,7 @@ void broadcast(char *msg, int pengirim) {
     }
 }
 ```
+
 
 ### navi.c
 
@@ -82,7 +104,11 @@ void *terima_pesan(void *arg) {
 ### Cara Kompilasi
 
 ```bash
-gcc -Wall -o server server.c
+# Menggunakan Makefile
+make
+
+# Atau manual
+gcc -Wall -o wired wired.c
 gcc -Wall -pthread -o navi navi.c
 ```
 
@@ -94,7 +120,7 @@ gcc -Wall -pthread -o navi navi.c
 
 ```bash
 # Terminal 1 — jalankan server DULU
-./server
+./wired
 
 # Terminal 2 — klien pertama
 ./navi
@@ -133,20 +159,4 @@ gcc -Wall -pthread -o navi navi.c
 > /exit
 [Client] Keluar dari chat.
 [Client] Koneksi ditutup.
-```
-
----
-
-### history.log
-
-Setiap aktivitas tercatat otomatis ke `history.log` dengan format `[YYYY-MM-DD HH:MM:SS] pesan`.
-
-```
-[2026-05-03 19:06:40] [System] SERVER ONLINE
-[2026-05-03 19:06:46] [Server] alice bergabung ke chat.
-[2026-05-03 19:06:50] [Server] lain bergabung ke chat.
-[2026-05-03 19:06:56] [alice]: hello lain
-[2026-05-03 19:06:59] [lain]: hello alice
-[2026-05-03 19:07:11] [Server] lain keluar.
-[2026-05-03 19:07:27] [Server] alice telah keluar.
 ```
